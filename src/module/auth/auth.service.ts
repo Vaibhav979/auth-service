@@ -62,8 +62,8 @@ export const loginUser = async (
 
     if (!user) {
         throw new AppError(
-            "Invalid Credentials",
-            401
+            "User does not exists",
+            400
         );
     }
     
