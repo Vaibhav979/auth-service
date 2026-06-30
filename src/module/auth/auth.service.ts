@@ -2,7 +2,7 @@ import { prisma } from "../../config/prisma";
 
 import { AppError } from "../../utils/AppError";
 
-import { generateAccessToken } from "../../utils/tokens";
+import { generateAccessToken, generateRefreshToken, saveRefreshToken } from "../../utils/tokens";
 
 import bcrypt from "bcrypt";
 
@@ -78,10 +78,36 @@ export const loginUser = async (
 
     const accessToken = generateAccessToken(user.id, user.role);
 
+    const refreshToken = generateRefreshToken(user.id);
+
+    saveRefreshToken(user.id, refreshToken);
+
     const { password: _, ...safeUser } = user;
 
     return {
         user: safeUser,
-        accessToken
+        accessToken,
+        refreshToken
     };
+};
+
+export const logoutUser = async (
+    refreshToken: string
+) => {
+
+    const storedToken = await prisma.refreshToken.findUnique({
+        where:{
+            token: refreshToken
+        }
+    });
+
+    if (!storedToken) {
+        throw new AppError("Unauthorized", 401);
+    }
+
+    await prisma.refreshToken.delete({
+        where: {
+            token: refreshToken
+        }
+    });
 };

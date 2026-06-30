@@ -4,11 +4,12 @@ import { AuthRequest } from "../types/auth-request";
 import { AppError } from "../utils/AppError";
 
 export const authorize = (...allowedRoles: Role[]) => (
-    req: AuthRequest,
+    req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    if (!allowedRoles.includes(req.user.role)) {
+    const { user } = req as AuthRequest;
+    if (!allowedRoles.includes(user.role)) {
         throw new AppError (
             "Forbidden",
             403

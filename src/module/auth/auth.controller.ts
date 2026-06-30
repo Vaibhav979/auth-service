@@ -4,7 +4,7 @@ import { asyncHandler } from '../../utils/asyncHandler';
 
 import { registerSchema, loginSchema } from '../../validator/auth.validator';
 
-import { createUser, loginUser } from './auth.service';
+import { createUser, loginUser, logoutUser } from './auth.service';
 
 export const registerController = asyncHandler (
     async (
@@ -33,5 +33,20 @@ export const loginController = asyncHandler (
         return res.status(200).json(
             result
         );
+    }
+);
+
+export const logoutController = asyncHandler (
+    async (
+        req: Request,
+        res: Response
+    ) => {
+        const { refreshToken } = req.body;
+
+        await logoutUser(refreshToken);
+
+        return res.status(200).json({
+            "message": "logged out successfully"
+        });
     }
 );
