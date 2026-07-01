@@ -30,9 +30,17 @@ export const loginController = asyncHandler (
 
         const result = await loginUser(email, password);
 
-        return res.status(200).json(
-            result
-        );
+        res.cookie("refreshToken", result.refreshToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            maxAge: 7*24*60*60*1000
+        });
+
+        return res.status(200).json({
+            user: result.user,
+            accessToken: result.accessToken
+        });
     }
 );
 
@@ -41,9 +49,11 @@ export const logoutController = asyncHandler (
         req: Request,
         res: Response
     ) => {
-        const { refreshToken } = req.body;
+        const refreshToken = req.cookies.refreshToken;
 
         await logoutUser(refreshToken);
+
+        res.clearCookie("refreshToken");
 
         return res.status(200).json({
             "message": "logged out successfully"

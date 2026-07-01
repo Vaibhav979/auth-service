@@ -8,9 +8,18 @@ export const refreshToken = asyncHandler (
         req: Request,
         res: Response
     ) => {
-        const { refreshToken } = req.body;
+        const refreshToken = req.cookies.refreshToken;
         const response = await refreshUser(refreshToken);
 
-        return res.status(200).json(response);
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            maxAge: 7*24*60*60*1000
+        });
+
+        return res.status(200).json({
+            accessToken: response.accessToken
+        });
     }
 );
