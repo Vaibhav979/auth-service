@@ -4,7 +4,7 @@ import { prisma } from "../../config/prisma";
 
 import { verifyRefreshToken } from "../../utils/tokens";
 
-import { generateAccessToken } from "../../utils/tokens";
+import { generateAccessToken, generateRefreshToken, saveRefreshToken } from "../../utils/tokens";
 
 export const refreshUser = async (
     refreshToken: string
@@ -35,6 +35,16 @@ export const refreshUser = async (
         throw new AppError("Unauthorized", 401);
     }
 
+    await prisma.refreshToken.delete({
+        where: {
+            token: refreshToken
+        }
+    });
+
+    const newRefreshToken = generateRefreshToken(user.id);
+
+    saveRefreshToken(user.id, newRefreshToken);
+
     const accessToken = generateAccessToken(
         user.id,
         user.role
@@ -42,6 +52,6 @@ export const refreshUser = async (
 
     return {
         accessToken, 
-        refreshToken 
+        refreshToken: newRefreshToken
     }
 };
