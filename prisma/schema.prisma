@@ -19,10 +19,11 @@ model User {
 
 model RefreshToken {
   id        String   @id @default(uuid())
+  jti       String?   @unique
   userId    String
   expiresAt DateTime
   createdAt DateTime @default(now())
-  token     String   @unique
+  hashedToken     String?
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
