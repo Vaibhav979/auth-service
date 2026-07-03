@@ -1,8 +1,10 @@
 import { prisma } from "../../config/prisma";
 
+import crypto from "crypto";
+
 import { AppError } from "../../utils/AppError";
 
-import { generateAccessToken, generateRefreshToken, saveRefreshToken } from "../../utils/tokens";
+import { generateAccessToken, generateRefreshToken, saveRefreshToken, verifyRefreshToken } from "../../utils/tokens";
 
 import bcrypt from "bcrypt";
 
@@ -63,7 +65,7 @@ export const loginUser = async (
     if (!user) {
         throw new AppError(
             "User does not exists",
-            400
+            404
         );
     }
     
@@ -78,9 +80,16 @@ export const loginUser = async (
 
     const accessToken = generateAccessToken(user.id, user.role);
 
-    const refreshToken = generateRefreshToken(user.id);
+    const jti = crypto.randomUUID();
+    const refreshToken = generateRefreshToken(user.id, jti);
 
-    saveRefreshToken(user.id, refreshToken);
+    const hashedToken = await bcrypt.hash(refreshToken, 10);
+
+    await saveRefreshToken(
+        user.id,
+        jti,
+        hashedToken
+    );
 
     const { password: _, ...safeUser } = user;
 
@@ -95,19 +104,27 @@ export const logoutUser = async (
     refreshToken: string
 ) => {
 
-    const storedToken = await prisma.refreshToken.findUnique({
-        where:{
-            token: refreshToken
+    const decoded = verifyRefreshToken(refreshToken);
+
+    const session = await prisma.refreshToken.findUnique({
+        where: {
+            jti: decoded.jti
         }
     });
 
-    if (!storedToken) {
+    if (!session) {
+        throw new AppError("Unauthorized", 401);
+    }
+
+    const isMatch = await bcrypt.compare(refreshToken, session.hashedToken);
+
+    if (!isMatch) {
         throw new AppError("Unauthorized", 401);
     }
 
     await prisma.refreshToken.delete({
         where: {
-            token: refreshToken
+            jti: decoded.jti
         }
     });
 };

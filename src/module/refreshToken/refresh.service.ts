@@ -6,23 +6,30 @@ import { verifyRefreshToken } from "../../utils/tokens";
 
 import { generateAccessToken, generateRefreshToken, saveRefreshToken } from "../../utils/tokens";
 
+import crypto from "crypto";
+
+import bcrypt from "bcrypt";
+
 export const refreshUser = async (
     refreshToken: string
 ) => {
+    if (!refreshToken) {
+        throw new AppError("Unauthenticated", 401);
+    }
     const decoded = verifyRefreshToken(refreshToken);
 
-    const storedToken = await prisma.refreshToken.findUnique({
+    const session = await prisma.refreshToken.findUnique({
         where: {
-            token: refreshToken
+            jti: decoded.jti
         }
     });
 
-    if (!storedToken) {
-        throw new AppError("Unauthorized", 401);
+    if (!session) {
+        throw new AppError("Unauthenticated", 401);
     }
 
-    if (storedToken.expiresAt < new Date()) {
-        throw new AppError("Refresh token expired", 401);
+    if (session.expiresAt < new Date()) {
+        throw new AppError("Unauthenticated", 401);
     }
 
     const user = await prisma.user.findUnique({
@@ -32,18 +39,22 @@ export const refreshUser = async (
     });
 
     if (!user) {
-        throw new AppError("Unauthorized", 401);
+        throw new AppError("Unauthenticated", 401);
     }
 
     await prisma.refreshToken.delete({
         where: {
-            token: refreshToken
+            jti: decoded.jti
         }
     });
 
-    const newRefreshToken = generateRefreshToken(user.id);
+    const jti = crypto.randomUUID();
 
-    saveRefreshToken(user.id, newRefreshToken);
+    const newRefreshToken = generateRefreshToken(user.id, jti);
+
+    const hashedToken = await bcrypt.hash(newRefreshToken, 10);
+
+    saveRefreshToken(user.id, hashedToken, jti);
 
     const accessToken = generateAccessToken(
         user.id,

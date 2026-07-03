@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 import { prisma } from "../config/prisma"; 
 
-import { JwtPayload } from '../types/jwt';
+import { RefreshTokenPayload } from '../types/jwt';
 
 export const generateAccessToken = (
     id: string,
@@ -18,10 +18,14 @@ export const generateAccessToken = (
 };
 
 export const generateRefreshToken = (
-    id: string
+    id: string,
+    jti: string
 ) => {
     return jwt.sign(
-        { id },
+        {
+            id,
+            jti
+        },
         process.env.REFRESH_TOKEN_SECRET as string,
         {
             expiresIn: "7d"
@@ -35,17 +39,19 @@ export const verifyRefreshToken = (
     return jwt.verify(
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET!
-    ) as JwtPayload;
+    ) as RefreshTokenPayload;
 }
 
 export const saveRefreshToken = async (
     userId: string,
+    jti: string,
     token: string
 ) => {
     return prisma.refreshToken.create({
         data: {
-            token,
+            hashedToken: token,
             userId,
+            jti,
             expiresAt: new Date(
                 Date.now() + 7 * 24 * 60 * 60 * 1000
             )

@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 
 import { AppError } from '../utils/AppError';
 
-import { JwtPayload } from '../types/jwt';
+import { AccessTokenPayload } from '../types/jwt';
 
 export const verifyToken = (
     req: Request,
@@ -35,7 +35,7 @@ export const verifyToken = (
         const decoded = jwt.verify(
             token,
             secret
-        ) as JwtPayload;
+        ) as AccessTokenPayload;
 
         const { id, role } = decoded;
         (req as Request & { user: { id: string; role: Role } }).user = { id, role };
