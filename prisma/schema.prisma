@@ -24,6 +24,8 @@ model RefreshToken {
   expiresAt DateTime
   createdAt DateTime @default(now())
   hashedToken     String
+  userAgent       String?
+  ipAddress       String?
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 

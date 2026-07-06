@@ -11,7 +11,9 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 
 export const refreshUser = async (
-    refreshToken: string
+    refreshToken: string,
+    ipAddress: string,
+    userAgent: string | null 
 ) => {
     if (!refreshToken) {
         throw new AppError("Unauthenticated", 401);
@@ -54,7 +56,7 @@ export const refreshUser = async (
 
     const hashedToken = await bcrypt.hash(newRefreshToken, 10);
 
-    saveRefreshToken(user.id, hashedToken, jti);
+    await saveRefreshToken(user.id, hashedToken, jti, ipAddress, userAgent);
 
     const accessToken = generateAccessToken(
         user.id,

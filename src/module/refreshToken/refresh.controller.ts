@@ -9,7 +9,7 @@ export const refreshToken = asyncHandler (
         res: Response
     ) => {
         const refreshToken = req.cookies.refreshToken;
-        const response = await refreshUser(refreshToken);
+        const response = await refreshUser(refreshToken, req.ip!, req.headers["user-agent"] ?? null);
 
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,

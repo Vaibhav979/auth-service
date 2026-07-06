@@ -48,7 +48,9 @@ export const createUser = async (
 
 export const loginUser = async (
     email: string,
-    password: string
+    password: string,
+    ipAddress: string,
+    userAgent: string | null
 ) => {
     const user = await prisma.user.findUnique({
         where:{
@@ -88,7 +90,9 @@ export const loginUser = async (
     await saveRefreshToken(
         user.id,
         jti,
-        hashedToken
+        hashedToken,
+        ipAddress,
+        userAgent
     );
 
     const { password: _, ...safeUser } = user;

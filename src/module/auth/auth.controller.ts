@@ -28,7 +28,9 @@ export const loginController = asyncHandler (
     ) => {
         const { email, password } = loginSchema.parse(req.body);
 
-        const result = await loginUser(email, password);
+        const userAgent = req.headers["user-agent"] ?? null;
+
+        const result = await loginUser(email, password, req.ip!, userAgent);
 
         res.cookie("refreshToken", result.refreshToken, {
             httpOnly: true,

@@ -45,7 +45,9 @@ export const verifyRefreshToken = (
 export const saveRefreshToken = async (
     userId: string,
     jti: string,
-    token: string
+    token: string,
+    ipAddress: string,
+    userAgent: string | null
 ) => {
     return prisma.refreshToken.create({
         data: {
@@ -54,7 +56,9 @@ export const saveRefreshToken = async (
             jti,
             expiresAt: new Date(
                 Date.now() + 7 * 24 * 60 * 60 * 1000
-            )
+            ),
+            ipAddress,
+            userAgent
         }
     });
 };
