@@ -1,7 +1,7 @@
 ## To minimize refactoring and keep the project production-oriented:
 
-### Repository Pattern (before adding more business logic)
-### Rename RefreshToken → Session
+~~### Rename RefreshToken → Session~~
+~~### Repository Pattern (before adding more business logic)~~
 ### Helmet + CORS + Rate Limiting
 ### Email Verification
 ### Forgot Password / Reset Password

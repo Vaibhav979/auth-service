@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 
+import { env } from "../../config/env";
+
 import { RefreshTokenPayload } from '../types/jwt';
 
 import * as sessionRepo from "../../module/session/session.repo";
@@ -10,7 +12,7 @@ export const generateAccessToken = (
 ) => {
     return jwt.sign(
         { id, role },
-        process.env.JWT_SECRET as string,
+        env.JWT_SECRET,
         {
             expiresIn: "15m"
         }
@@ -26,7 +28,7 @@ export const generateRefreshToken = (
             id,
             jti
         },
-        process.env.REFRESH_TOKEN_SECRET as string,
+        env.REFRESH_TOKEN_SECRET,
         {
             expiresIn: "7d"
         }
@@ -38,7 +40,7 @@ export const verifyRefreshToken = (
 ) => {
     return jwt.verify(
         refreshToken,
-        process.env.REFRESH_TOKEN_SECRET!
+        env.REFRESH_TOKEN_SECRET!
     ) as RefreshTokenPayload;
 }
 
