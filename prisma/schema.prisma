@@ -14,10 +14,10 @@ model User {
   password      String
   role          Role           @default(USER)
   createdAt     DateTime       @default(now())
-  refreshTokens RefreshToken[]
+  sessions      Session[]
 }
 
-model RefreshToken {
+model Session {
   id        String   @id @default(uuid())
   jti       String   @unique
   userId    String
