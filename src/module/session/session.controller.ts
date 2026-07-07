@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 
-import { AuthRequest } from '../../types/auth-request';
+import { AuthRequest } from '../../shared/types/auth-request';
 
-import { asyncHandler } from '../../utils/asyncHandler';
+import { asyncHandler } from '../../shared/utils/asyncHandler';
 
 import { getSession, deleteSessionById, deleteAllSessions } from './session.service';
 

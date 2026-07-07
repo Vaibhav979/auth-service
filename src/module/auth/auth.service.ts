@@ -1,10 +1,12 @@
-import { prisma } from "../../config/prisma";
-
 import crypto from "crypto";
 
-import { AppError } from "../../utils/AppError";
+import * as userRepo from "../user/user.repo";
 
-import { generateAccessToken, generateRefreshToken, saveRefreshToken, verifyRefreshToken } from "../../utils/tokens";
+import * as sessionRepo from "../session/session.repo";
+
+import { AppError } from "../../shared/utils/AppError";
+
+import { generateAccessToken, generateRefreshToken, saveRefreshToken, verifyRefreshToken } from "../../shared/utils/tokens";
 
 import bcrypt from "bcrypt";
 
@@ -13,11 +15,7 @@ export const createUser = async (
     email: string,
     password: string
 ) => {
-    const emailExists = await prisma.user.findUnique({
-        where: {
-            email
-        }
-    });
+    const emailExists = await userRepo.find(email);
 
     if (emailExists) {
         throw new AppError("User Already Exists", 409);
@@ -25,18 +23,7 @@ export const createUser = async (
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await prisma.user.create({
-        data: {
-            name,
-            email,
-            password: hashedPassword
-        }, select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true
-        }
-    });
+    const user = await userRepo.create(name, email, hashedPassword);
 
     const accessToken = generateAccessToken(user.id, user.role);
 
@@ -46,23 +33,14 @@ export const createUser = async (
     };
 };
 
+
 export const loginUser = async (
     email: string,
     password: string,
     ipAddress: string,
     userAgent: string | null
 ) => {
-    const user = await prisma.user.findUnique({
-        where:{
-            email
-        }, select: {
-            id: true,
-            name: true,
-            password: true,
-            email: true,
-            role: true
-        }
-    });
+    const user = await userRepo.find(email);
 
     if (!user) {
         throw new AppError(
@@ -110,11 +88,7 @@ export const logoutUser = async (
 
     const decoded = verifyRefreshToken(refreshToken);
 
-    const session = await prisma.refreshToken.findUnique({
-        where: {
-            jti: decoded.jti
-        }
-    });
+    const session = await sessionRepo.find(decoded.jti);
 
     if (!session) {
         throw new AppError("Unauthorized", 401);
@@ -126,9 +100,5 @@ export const logoutUser = async (
         throw new AppError("Unauthorized", 401);
     }
 
-    await prisma.refreshToken.delete({
-        where: {
-            jti: decoded.jti
-        }
-    });
+    await sessionRepo.deleteSession(decoded.jti);
 };

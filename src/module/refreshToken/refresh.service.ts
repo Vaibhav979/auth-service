@@ -1,10 +1,12 @@
-import { AppError } from "../../utils/AppError";
+import { AppError } from "../../shared/utils/AppError";
 
-import { prisma } from "../../config/prisma";
+import { verifyRefreshToken } from "../../shared/utils/tokens";
 
-import { verifyRefreshToken } from "../../utils/tokens";
+import { generateAccessToken, generateRefreshToken, saveRefreshToken } from "../../shared/utils/tokens";
 
-import { generateAccessToken, generateRefreshToken, saveRefreshToken } from "../../utils/tokens";
+import * as sessionRepo from "../session/session.repo";
+
+import * as userRepo from "../user/user.repo";
 
 import crypto from "crypto";
 
@@ -20,11 +22,7 @@ export const refreshUser = async (
     }
     const decoded = verifyRefreshToken(refreshToken);
 
-    const session = await prisma.refreshToken.findUnique({
-        where: {
-            jti: decoded.jti
-        }
-    });
+    const session = await sessionRepo.find(decoded.jti);
 
     if (!session) {
         throw new AppError("Unauthenticated", 401);
@@ -34,21 +32,13 @@ export const refreshUser = async (
         throw new AppError("Unauthenticated", 401);
     }
 
-    const user = await prisma.user.findUnique({
-        where: {
-            id: decoded.id
-        }
-    });
+    const user = await userRepo.findById(decoded.id);
 
     if (!user) {
         throw new AppError("Unauthenticated", 401);
     }
 
-    await prisma.refreshToken.delete({
-        where: {
-            jti: decoded.jti
-        }
-    });
+    await sessionRepo.deleteSession(decoded.jti);
 
     const jti = crypto.randomUUID();
 

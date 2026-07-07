@@ -4,11 +4,11 @@ import {
     registerController,
     loginController,
     logoutController
-} from "../module/auth/auth.controller";
+} from "./auth.controller";
 
-import { verifyToken } from "../middleware/auth.middleware";
+import { verifyToken } from "../../middleware/auth.middleware";
 
-import { refreshToken } from "../module/refreshToken/refresh.controller";
+import { refreshToken } from "../refreshToken/refresh.controller";
 
 const router = express.Router();
 

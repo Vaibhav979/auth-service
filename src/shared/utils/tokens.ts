@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 
-import { prisma } from "../config/prisma"; 
-
 import { RefreshTokenPayload } from '../types/jwt';
+
+import * as sessionRepo from "../../module/session/session.repo";
 
 export const generateAccessToken = (
     id: string,
@@ -49,16 +49,11 @@ export const saveRefreshToken = async (
     ipAddress: string,
     userAgent: string | null
 ) => {
-    return prisma.refreshToken.create({
-        data: {
-            hashedToken: token,
-            userId,
-            jti,
-            expiresAt: new Date(
-                Date.now() + 7 * 24 * 60 * 60 * 1000
-            ),
-            ipAddress,
-            userAgent
-        }
-    });
+    return sessionRepo.save(
+        userId,
+        jti,
+        token,
+        ipAddress,
+        userAgent
+    );
 };

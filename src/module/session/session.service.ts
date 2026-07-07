@@ -1,20 +1,12 @@
 import { prisma } from "../../config/prisma";
-import { AppError } from "../../utils/AppError";
+import { AppError } from "../../shared/utils/AppError";
+
+import * as sessionRepo from "./session.repo";
 
 export const getSession = async (
     userId: string
 ) => {
-    const session = await prisma.refreshToken.findMany({
-        where: {
-            userId
-        },
-        select: {
-            id: true,
-            userAgent: true,
-            createdAt: true,
-            expiresAt: true
-        }
-    });
+    const session = await sessionRepo.findAll(userId);
 
     return session;
 };
@@ -22,27 +14,17 @@ export const getSession = async (
 export const deleteSessionById = async (
     id: string
 ) => {
-    const session = await prisma.refreshToken.findUnique({
-        where: { id }
-    });
+    const session = await sessionRepo.findById(id);
 
     if (!session) {
         throw new AppError("Session not found", 404);
     }
-    
-    await prisma.refreshToken.delete({
-        where: {
-            id
-        }
-    });
+
+    await sessionRepo.deleteSessionById(id);
 }
 
 export const deleteAllSessions = async (
     userId: string
 ) => {
-    await prisma.refreshToken.deleteMany({
-        where: {
-            userId
-        }
-    });
+    await sessionRepo.deleteAllSessions(userId);
 }

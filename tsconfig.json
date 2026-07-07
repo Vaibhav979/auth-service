@@ -19,6 +19,6 @@
     "exactOptionalPropertyTypes": true
   },
 
-  "include": ["src/**/*", "src/types/**/*.d.ts"],
+  "include": ["src/**/*", "src/shared/types/**/*.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

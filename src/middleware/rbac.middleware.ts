@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Role } from "@prisma/client";
-import { AuthRequest } from "../types/auth-request";
-import { AppError } from "../utils/AppError";
+import { AuthRequest } from "../shared/types/auth-request";
+import { AppError } from "../shared/utils/AppError";
 
 export const authorize = (...allowedRoles: Role[]) => (
     req: Request,

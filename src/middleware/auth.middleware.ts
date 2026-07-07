@@ -4,9 +4,9 @@ import { Role } from "@prisma/client";
 
 import jwt from "jsonwebtoken";
 
-import { AppError } from '../utils/AppError';
+import { AppError } from '../shared/utils/AppError';
 
-import { AccessTokenPayload } from '../types/jwt';
+import { AccessTokenPayload } from '../shared/types/jwt';
 
 export const verifyToken = (
     req: Request,

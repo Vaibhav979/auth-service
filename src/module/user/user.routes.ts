@@ -2,10 +2,10 @@ import express from "express";
 
 import { Role } from "@prisma/client";
 
-import { verifyToken } from "../middleware/auth.middleware";
-import { authorize } from "../middleware/rbac.middleware";
+import { verifyToken } from "../../middleware/auth.middleware";
+import { authorize } from "../../middleware/rbac.middleware";
 
-import { getAllUsersController } from "../controllers/users.controller";
+import { getAllUsersController } from "./users.controller";
 
 const router = express.Router();
 

@@ -1,8 +1,8 @@
 import express from 'express';
 
-import authRoutes from "../src/routes/auth.routes";
+import authRoutes from "./module/auth/auth.routes";
 
-import userRoutes from "../src/routes/user.routes";
+import userRoutes from "./module/user/user.routes";
 
 import sessionRoutes from "../src/module/session/session.routes";
 

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
-import { asyncHandler } from '../../utils/asyncHandler';
+import { asyncHandler } from '../../shared/utils/asyncHandler';
 
-import { registerSchema, loginSchema } from '../../validator/auth.validator';
+import { registerSchema, loginSchema } from './auth.validator';
 
 import { createUser, loginUser, logoutUser } from './auth.service';
 

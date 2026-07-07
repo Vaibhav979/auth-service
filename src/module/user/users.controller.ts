@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "../utils/asyncHandler";
+import { asyncHandler } from "../../shared/utils/asyncHandler";
 
-import { getAllUsers } from "../services/users.service"
+import { getAllUsers } from "./users.service"
 
-export const getAllUsersController = asyncHandler (
-    async(
+export const getAllUsersController = asyncHandler(
+    async (
         req: Request,
         res: Response
     ) => {
