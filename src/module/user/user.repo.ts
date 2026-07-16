@@ -9,7 +9,8 @@ export const find = async (email: string) => {
             name: true,
             password: true,
             email: true,
-            role: true
+            role: true,
+            verified: true
         }
     });
 };
@@ -40,3 +41,16 @@ export const create = async (name: string, email: string, hashedPassword: string
 export const getAllUsers = async () => {
     return prisma.user.findMany();
 }
+
+export const updateUserVerification = async (
+    userId: string
+) => {
+    return prisma.user.update({
+        where: {
+            id: userId
+        }, 
+        data: {
+            verified: true
+        }
+    });
+};

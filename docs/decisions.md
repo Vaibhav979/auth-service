@@ -7,7 +7,7 @@ addition of a jti field in the schema.
 
 #### JWT payload
 
-The jwt payload needs to modified from
+The jwt payload needs to be modified from
 
 export interface JwtPayload {
 id: string;
@@ -59,4 +59,45 @@ lastUsedAt
 expiresAt
 
 createdAt
- 
+
+# Email Verification
+
+## Schema
+
+Register
+
+↓
+
+Create User (verified = false)
+
+↓
+
+Generate random verification token
+
+↓
+
+Hash token
+
+↓
+
+Store hashed token
+
+↓
+
+Send raw token via email
+
+↓
+
+User clicks email link
+
+↓
+
+Verify
+
+↓
+
+verified = true
+
+↓
+
+Delete verification token

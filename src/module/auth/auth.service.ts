@@ -4,9 +4,15 @@ import * as userRepo from "../user/user.repo";
 
 import * as sessionRepo from "../session/session.repo";
 
+import * as verificationRepo from "../verification/verification.repo";
+
 import { AppError } from "../../shared/utils/AppError";
 
 import { generateAccessToken, generateRefreshToken, saveRefreshToken, verifyRefreshToken } from "../../shared/utils/tokens";
+
+import { generateVerificationToken, hashVerificationToken } from "../../shared/utils/verification";
+
+import { sendVerificationEmail } from "../email/email.service";
 
 import bcrypt from "bcrypt";
 
@@ -25,6 +31,14 @@ export const createUser = async (
 
     const user = await userRepo.create(name, email, hashedPassword);
 
+    const verificationToken = generateVerificationToken();
+
+    await sendVerificationEmail(email, user.id, verificationToken);
+
+    const hashedToken = await hashVerificationToken(verificationToken);
+
+    await verificationRepo.saveVerificationToken(user.id, hashedToken);
+
     const accessToken = generateAccessToken(user.id, user.role);
 
     return {
@@ -32,7 +46,6 @@ export const createUser = async (
         accessToken
     };
 };
-
 
 export const loginUser = async (
     email: string,
@@ -48,7 +61,14 @@ export const loginUser = async (
             404
         );
     }
-    
+
+    if (!user.verified) {
+        throw new AppError(
+            "Please verify your email before logging in.",
+            403
+        );
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
