@@ -10,7 +10,7 @@ import { AppError } from "../../shared/utils/AppError";
 
 import { generateAccessToken, generateRefreshToken, saveRefreshToken, verifyRefreshToken } from "../../shared/utils/tokens";
 
-import { generateVerificationToken, hashVerificationToken } from "../../shared/utils/verification";
+import { generateSecureToken, hashSecureToken } from "../../shared/utils/verification";
 
 import { sendVerificationEmail } from "../email/email.service";
 
@@ -31,9 +31,9 @@ export const createUser = async (
 
     const user = await userRepo.create(name, email, hashedPassword);
 
-    const verificationToken = generateVerificationToken();
+    const verificationToken = generateSecureToken();
 
-    const hashedToken = await hashVerificationToken(verificationToken);
+    const hashedToken = await hashSecureToken(verificationToken);
 
     await verificationRepo.saveVerificationToken(user.id, hashedToken);
 
@@ -68,9 +68,9 @@ export const loginUser = async (
             await verificationRepo.deleteToken(user.id);
         }
 
-        const verificationToken = generateVerificationToken();
+        const verificationToken = generateSecureToken();
 
-        const hashedToken = await hashVerificationToken(verificationToken);
+        const hashedToken = await hashSecureToken(verificationToken);
 
         await verificationRepo.saveVerificationToken(user.id, hashedToken);
 
