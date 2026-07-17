@@ -33,11 +33,11 @@ export const createUser = async (
 
     const verificationToken = generateVerificationToken();
 
-    await sendVerificationEmail(email, user.id, verificationToken);
-
     const hashedToken = await hashVerificationToken(verificationToken);
 
     await verificationRepo.saveVerificationToken(user.id, hashedToken);
+
+    await sendVerificationEmail(email, user.id, verificationToken);
 
     const accessToken = generateAccessToken(user.id, user.role);
 
@@ -63,8 +63,21 @@ export const loginUser = async (
     }
 
     if (!user.verified) {
+
+        if (await verificationRepo.findToken(user.id)) {
+            await verificationRepo.deleteToken(user.id);
+        }
+
+        const verificationToken = generateVerificationToken();
+
+        const hashedToken = await hashVerificationToken(verificationToken);
+
+        await verificationRepo.saveVerificationToken(user.id, hashedToken);
+
+        await sendVerificationEmail(email, user.id, verificationToken);
+
         throw new AppError(
-            "Please verify your email before logging in.",
+            "Please verify your email. A new verification email has been sent.",
             403
         );
     }

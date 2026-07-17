@@ -6,7 +6,7 @@
 
 ~~### Helmet + CORS + Rate Limiting~~
 
-### Email Verification
+~~### Email Verification~~
 
 ### Forgot Password / Reset Password
 

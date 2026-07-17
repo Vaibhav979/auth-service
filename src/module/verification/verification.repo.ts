@@ -34,3 +34,13 @@ export const deleteToken = async (
         }
     });
 };
+
+export const findToken = async(
+    userId: string
+) => {
+    return prisma.verificationToken.findUnique({
+        where: {
+            userId
+        }
+    });
+};
