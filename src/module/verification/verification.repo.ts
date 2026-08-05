@@ -28,14 +28,14 @@ export const verifyToken = async (
 export const deleteToken = async (
     userId: string
 ) => {
-    return prisma.verificationToken.delete({
+    return prisma.verificationToken.deleteMany({
         where: {
             userId
         }
     });
 };
 
-export const findToken = async(
+export const findToken = async (
     userId: string
 ) => {
     return prisma.verificationToken.findUnique({

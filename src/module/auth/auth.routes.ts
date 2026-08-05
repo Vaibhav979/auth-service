@@ -5,7 +5,9 @@ import { authLimiter } from "../../middleware/rateLimit.middleware";
 import {
     registerController,
     loginController,
-    logoutController
+    logoutController,
+    forgetPasswordController,
+    resetPasswordController,
 } from "./auth.controller";
 
 import { verifyToken } from "../../middleware/auth.middleware";
@@ -28,5 +30,9 @@ router.get(
     "/verify-email",
     verifyEmailController
 );
+
+router.post("/forget-password", authLimiter, forgetPasswordController);
+
+router.post("/reset-password", authLimiter, resetPasswordController);
 
 export default router;

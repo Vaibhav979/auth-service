@@ -8,7 +8,7 @@
 
 ~~### Email Verification~~
 
-### Forgot Password / Reset Password
+~~### Forgot Password / Reset Password~~
 
 ### RS256 migration
 

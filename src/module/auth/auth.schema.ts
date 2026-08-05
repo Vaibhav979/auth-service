@@ -15,3 +15,8 @@ export const loginSchema =
 
                     password: z.string().min(8)
                 });
+
+export const forgetPasswordSchema = 
+                z.object({
+                    email: z.email()
+                });

@@ -8,28 +8,29 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  name          String
-  email         String         @unique
-  password      String
-  role          Role           @default(USER)
-  createdAt     DateTime       @default(now())
-  sessions      Session[]
-  verified      Boolean   @default(false)
-  verifiedAt    DateTime?
-  verificationToken VerificationToken?
+  id                 String              @id @default(uuid())
+  name               String
+  email              String              @unique
+  password           String
+  role               Role                @default(USER)
+  createdAt          DateTime            @default(now())
+  sessions           Session[]
+  verified           Boolean             @default(false)
+  verifiedAt         DateTime?
+  verificationToken  VerificationToken?
+  passwordResetToken PasswordResetToken?
 }
 
 model Session {
-  id        String   @id @default(uuid())
-  jti       String   @unique
-  userId    String
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  hashedToken     String
-  userAgent       String?
-  ipAddress       String?
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String   @id @default(uuid())
+  jti         String   @unique
+  userId      String
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  hashedToken String
+  userAgent   String?
+  ipAddress   String?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
@@ -38,14 +39,22 @@ enum Role {
 }
 
 model VerificationToken {
-
-  userId      String   @id
+  userId String @id
 
   hashedToken String
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+}
+
+model PasswordResetToken {
+  userId      String   @unique
+  hashedToken String
   expiresAt   DateTime
-
   createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

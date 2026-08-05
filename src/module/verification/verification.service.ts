@@ -4,13 +4,13 @@ import { AppError } from "../../shared/utils/AppError";
 
 import * as userRepo from '../user/user.repo';
 
-import bcrypt from "bcrypt";
+import { compareSecureToken } from "../../shared/utils/verification";
 
 export const verify = async (
     userId: string,
     token: string
 ) => {
-    
+
     const verificationToken = await verificationRepo.verifyToken(userId);
 
     if (!verificationToken) {
@@ -21,7 +21,7 @@ export const verify = async (
         throw new AppError('Verification token has expired', 400);
     }
 
-    const isMatch = await bcrypt.compare(
+    const isMatch = await compareSecureToken(
         token,
         verificationToken.hashedToken
     );

@@ -11,3 +11,10 @@ export const hashSecureToken = async (
 ) => {
     return bcrypt.hash(token, 10);
 };
+
+export const compareSecureToken = async (
+    token: string,
+    hashedToken: string
+) => {
+    return bcrypt.compare(token, hashedToken);
+} 
