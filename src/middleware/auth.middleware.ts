@@ -1,3 +1,4 @@
+import { publicKey } from "../shared/config/keys";
 import { Request, Response, NextFunction } from "express";
 
 import { Role } from "@prisma/client";
@@ -24,7 +25,7 @@ export const verifyToken = (
     if (scheme !== "Bearer" || !token) {
         throw new AppError("Unauthenticated", 401);
     }
-    
+
     const secret = process.env.JWT_SECRET;
 
     if (!secret) {
@@ -34,7 +35,9 @@ export const verifyToken = (
     try {
         const decoded = jwt.verify(
             token,
-            secret
+            publicKey, {
+            algorithms: ["RS256"]
+        }
         ) as AccessTokenPayload;
 
         const { id, role } = decoded;

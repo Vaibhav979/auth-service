@@ -1,0 +1,369 @@
+# 🔐 Auth Service
+
+A production-inspired authentication and authorization service built with **Node.js, Express, TypeScript, Prisma, and PostgreSQL**.
+
+Designed as an independent Identity Service for a future **microservices architecture**, supporting secure authentication, device sessions, email verification, password reset, refresh token rotation, and RS256 JWT authentication.
+
+---
+
+## ✨ Features
+
+### Authentication
+
+- User Registration
+- User Login
+- User Logout
+- Access Token (RS256)
+- Refresh Token (HS256)
+- Refresh Token Rotation
+
+### Authorization
+
+- Role Based Access Control (RBAC)
+- Protected Routes
+- JWT Authentication Middleware
+
+### Email
+
+- Email Verification
+- Verification Email Resend
+- Forgot Password
+- Password Reset
+
+### Session Management
+
+- Device Sessions
+- View Active Sessions
+- Logout Current Session
+- Logout All Sessions
+
+### Security
+
+- Password Hashing (bcrypt)
+- Refresh Token Hashing
+- Secure Verification Tokens
+- Secure Password Reset Tokens
+- HttpOnly Refresh Cookies
+- Helmet
+- CORS
+- Rate Limiting
+- Environment Validation
+- Global Error Handling
+
+---
+
+# 🏗 Architecture
+
+```
+Client
+   │
+   ▼
+Controller
+   │
+   ▼
+Service
+   │
+   ▼
+Repository
+   │
+   ▼
+Prisma ORM
+   │
+   ▼
+PostgreSQL
+```
+
+Project Structure
+
+```
+src
+│
+├── modules
+│   ├── auth
+│   ├── user
+│   ├── session
+│   ├── verification
+│   ├── password-reset
+│   └── email
+│
+├── middleware
+│
+├── shared
+│   ├── config
+│   ├── utils
+│   └── types
+│
+└── server.ts
+```
+
+---
+
+# 🔑 Authentication Flow
+
+## Registration
+
+```
+Register
+
+↓
+
+Create User
+
+↓
+
+Generate Verification Token
+
+↓
+
+Hash Token
+
+↓
+
+Store Token
+
+↓
+
+Send Verification Email
+```
+
+---
+
+## Login
+
+```
+Validate Credentials
+
+↓
+
+Verify Email
+
+↓
+
+Generate Access Token (RS256)
+
+↓
+
+Generate Refresh Token (HS256)
+
+↓
+
+Hash Refresh Token
+
+↓
+
+Store Session
+
+↓
+
+Return Access Token
+```
+
+---
+
+## Refresh Token Flow
+
+```
+Refresh Token
+
+↓
+
+Verify JWT
+
+↓
+
+Find Session (JTI)
+
+↓
+
+Compare Hash
+
+↓
+
+Delete Old Session
+
+↓
+
+Generate New Refresh Token
+
+↓
+
+Store New Session
+
+↓
+
+Return New Tokens
+```
+
+---
+
+## Password Reset
+
+```
+Forgot Password
+
+↓
+
+Generate Secure Token
+
+↓
+
+Hash Token
+
+↓
+
+Store Token
+
+↓
+
+Send Email
+
+↓
+
+Verify Token
+
+↓
+
+Update Password
+
+↓
+
+Delete All Sessions
+```
+
+---
+
+# 🔒 Security Design
+
+## Access Tokens
+
+- RS256
+- 15 minute expiry
+- Contains:
+  - User ID
+  - User Role
+
+Only the Auth Service owns the **private key**.
+
+Future microservices (API Gateway, Chat Service, etc.) verify tokens using the **public key**.
+
+---
+
+## Refresh Tokens
+
+- HS256
+- 7 day expiry
+- Stored as bcrypt hashes
+- Rotation on every refresh
+- One session per refresh token
+
+---
+
+## Device Sessions
+
+Each login creates an independent session.
+
+Stored information:
+
+- Session ID
+- JTI
+- User Agent
+- IP Address
+- Creation Time
+- Expiry Time
+
+Supports:
+
+- Logout Current Device
+- Logout Specific Device
+- Logout All Devices
+
+---
+
+# 🛠 Tech Stack
+
+- Node.js
+- Express.js
+- TypeScript
+- PostgreSQL
+- Prisma ORM
+- JWT
+- RS256 / HS256
+- bcrypt
+- Nodemailer
+- Zod
+- Helmet
+- Express Rate Limit
+
+---
+
+# API Endpoints
+
+## Authentication
+
+| Method | Endpoint       |
+| ------ | -------------- |
+| POST   | /auth/register |
+| POST   | /auth/login    |
+| POST   | /auth/logout   |
+| POST   | /auth/refresh  |
+
+---
+
+## Email Verification
+
+| Method | Endpoint           |
+| ------ | ------------------ |
+| GET    | /auth/verify-email |
+
+---
+
+## Password
+
+| Method | Endpoint              |
+| ------ | --------------------- |
+| POST   | /auth/forgot-password |
+| POST   | /auth/reset-password  |
+
+---
+
+## Sessions
+
+| Method | Endpoint     |
+| ------ | ------------ |
+| GET    | /session     |
+| DELETE | /session/:id |
+| DELETE | /session     |
+
+---
+
+# Environment Variables
+
+```env
+DATABASE_URL=
+
+PORT=
+
+ACCESS_TOKEN_EXPIRY=
+
+REFRESH_TOKEN_SECRET=
+
+EMAIL_USER=
+
+EMAIL_PASS=
+```
+
+RSA keys are generated locally and are **not committed**.
+
+```
+keys/
+├── private.pem
+└── public.pem
+```
+
+---
+
+# Why This Project?
+
+This project is designed as the authentication component of a future distributed backend system.
+
+Rather than acting as a standalone authentication API, it serves as an **Identity Provider** responsible for issuing secure JWTs that can be trusted across multiple independent services.

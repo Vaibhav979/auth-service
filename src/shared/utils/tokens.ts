@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 
+import { privateKey } from "../config/keys";
+
 import { env } from "../../config/env";
 
 import { RefreshTokenPayload } from '../types/jwt';
@@ -12,8 +14,9 @@ export const generateAccessToken = (
 ) => {
     return jwt.sign(
         { id, role },
-        env.JWT_SECRET,
+        privateKey,
         {
+            algorithm: "RS256",
             expiresIn: "15m"
         }
     );
