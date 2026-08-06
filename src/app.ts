@@ -10,9 +10,13 @@ import sessionRoutes from "../src/module/session/session.routes";
 
 import cookieParser from "cookie-parser";
 
+import { httpLogger } from "./shared/logger/httpLogger";
+
 const app = express();
 
 app.use(helmet());
+
+app.use(httpLogger);
 
 app.use(express.json());
 

@@ -19,6 +19,7 @@ import { hashPassword, verifyPassword } from "../../shared/utils/password";
 import * as passwordResetRepo from "./password-reset.repo";
 
 import bcrypt from "bcrypt";
+import { logger } from "../../shared/logger/logger";
 
 export const createUser = async (
     name: string,
@@ -125,6 +126,15 @@ export const loginUser = async (
         userAgent
     );
 
+    logger.info(
+        {
+            userId: user.id,
+            email: user.email,
+            ip: ipAddress
+        },
+        "User logged in"
+    );
+
     const { password: _, ...safeUser } = user;
 
     return {
@@ -153,6 +163,14 @@ export const logoutUser = async (
     }
 
     await sessionRepo.deleteSession(decoded.jti);
+
+    logger.info(
+        {
+            userId: decoded.id,
+            jti: decoded.jti
+        },
+        "User logged out"
+    );
 };
 
 export const forgetPassword = async (
@@ -218,6 +236,13 @@ export const resetPassword = async (
     await userRepo.updatePassword(
         userId,
         hashedPassword
+    );
+
+    logger.info(
+        {
+            userId
+        },
+        "Password reset successfully"
     );
 
     await passwordResetRepo.deleteToken(userId);

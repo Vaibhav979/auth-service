@@ -5,6 +5,7 @@ import { AppError } from "../../shared/utils/AppError";
 import * as userRepo from '../user/user.repo';
 
 import { compareSecureToken } from "../../shared/utils/verification";
+import { logger } from '../../shared/logger/logger';
 
 export const verify = async (
     userId: string,
@@ -32,5 +33,11 @@ export const verify = async (
 
     await userRepo.updateUserVerification(userId);
 
+    logger.info(
+        {
+            userId
+        },
+        "Email verified"
+    );
     await verificationRepo.deleteToken(userId);
 };
