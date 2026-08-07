@@ -10,6 +10,8 @@ import sessionRoutes from "../src/module/session/session.routes";
 
 import cookieParser from "cookie-parser";
 
+import healthRoutes from "./module/health/health.routes";
+
 import { httpLogger } from "./shared/logger/httpLogger";
 
 const app = express();
@@ -27,5 +29,7 @@ app.use("/auth", authRoutes);
 app.use("/", userRoutes);
 
 app.use("/session", sessionRoutes);
+
+app.use("/", healthRoutes);
 
 export default app;

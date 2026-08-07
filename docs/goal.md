@@ -12,7 +12,7 @@
 
 ### ~~RS256 migration~~
 
-### Pino Logging + Health Endpoint
+### ~~Pino Logging + Health Endpoint~~
 
 ### Tests + Documentation
 
