@@ -12,6 +12,8 @@ import cookieParser from "cookie-parser";
 
 import healthRoutes from "./module/health/health.routes";
 
+import { errorhandler } from "./middleware/error.middleware";
+
 import { httpLogger } from "./shared/logger/httpLogger";
 
 const app = express();
@@ -31,5 +33,7 @@ app.use("/", userRoutes);
 app.use("/session", sessionRoutes);
 
 app.use("/", healthRoutes);
+
+app.use(errorhandler);
 
 export default app;
