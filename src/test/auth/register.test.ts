@@ -6,6 +6,10 @@ import { beforeEach, describe, it, expect, vi } from "vitest";
 
 import { sendVerificationEmail } from "../../module/email/email.service";
 
+import app from "../../app";
+
+import { prisma } from "../../config/prisma";
+
 beforeEach(async () => {
     await prisma.passwordResetToken.deleteMany();
     await prisma.verificationToken.deleteMany();
@@ -28,9 +32,6 @@ vi.mock(
         };
     }
 );
-
-import app from "../../app";
-import { prisma } from "../../config/prisma";
 
 describe("POST /auth/register", () => {
 

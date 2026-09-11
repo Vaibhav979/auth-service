@@ -15,7 +15,7 @@ import bcrypt from "bcrypt";
 export const refreshUser = async (
     refreshToken: string,
     ipAddress: string,
-    userAgent: string | null 
+    userAgent: string | null
 ) => {
     if (!refreshToken) {
         throw new AppError("Unauthenticated", 401);
@@ -25,6 +25,12 @@ export const refreshUser = async (
     const session = await sessionRepo.find(decoded.jti);
 
     if (!session) {
+        throw new AppError("Unauthenticated", 401);
+    }
+
+    const isValid = await bcrypt.compare(refreshToken, session.hashedToken);
+
+    if (!isValid) {
         throw new AppError("Unauthenticated", 401);
     }
 
@@ -54,7 +60,7 @@ export const refreshUser = async (
     );
 
     return {
-        accessToken, 
+        accessToken,
         refreshToken: newRefreshToken
     }
 };

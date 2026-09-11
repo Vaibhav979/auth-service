@@ -7,6 +7,7 @@ import { env } from "../../config/env";
 import { RefreshTokenPayload } from '../types/jwt';
 
 import * as sessionRepo from "../../module/session/session.repo";
+import { AppError } from "./AppError";
 
 export const generateAccessToken = (
     id: string,
@@ -41,10 +42,14 @@ export const generateRefreshToken = (
 export const verifyRefreshToken = (
     refreshToken: string
 ) => {
-    return jwt.verify(
-        refreshToken,
-        env.REFRESH_TOKEN_SECRET!
-    ) as RefreshTokenPayload;
+    try {
+        return jwt.verify(
+            refreshToken,
+            env.REFRESH_TOKEN_SECRET!
+        ) as RefreshTokenPayload;
+    } catch {
+        throw new AppError("Unauthenticated", 401);
+    }
 }
 
 export const saveRefreshToken = async (
